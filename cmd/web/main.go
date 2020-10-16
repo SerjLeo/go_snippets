@@ -7,6 +7,11 @@ import (
 	"os"
 )
 
+type application struct {
+    errorLog *log.Logger
+    infoLog  *log.Logger
+}
+
 func main() {
 
 	addr := flag.String("addr", ":4000", "HTTP network address")
@@ -25,14 +30,11 @@ func main() {
     fileLog := log.New(f, "File\t", log.Ldate|log.Ltime)
     defer f.Close()
 
-    //Create Handler
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet", showSnippet)
-	mux.HandleFunc("/snippet/create", createSnippet)
 
-	fileServer := http.FileServer(http.Dir("./ui/static"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+    app := &application {
+        errorLog: errorLog,
+        infoLog: infoLog,
+    }
 
 	infoLog.Printf("Server is listening on port %s", *addr)
 	fileLog.Printf("Server is listening on port %s", *addr)
@@ -40,7 +42,7 @@ func main() {
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		Handler:  app.routes(),
 	}
 
 	err = srv.ListenAndServe()
