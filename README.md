@@ -1,3 +1,3 @@
-##To run project localy in root directory use##
+## Command to run project localy (use in root)
 ---
 `gin -i -t cmd/web`
